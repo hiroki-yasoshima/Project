@@ -1,0 +1,103 @@
+/* セル内で中央揃え */
+.attendance {
+	text-align: center;
+}
+
+/* テーブルのスタイル調整 */
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+th,
+td {
+	padding: 4px 6px;
+	border: 1px solid black;
+}
+
+/* テキストエリアの高さ調整 */
+textarea {
+	height: 60px;
+}
+
+/* 過去の勤怠を変更不可 */
+select[disabled] {
+	/* マウス操作を無効化 */
+	pointer-events: none;
+	/* 背景色を変更 */
+	background-color: #f0f0f0;
+	/* テキスト色を変更 */
+	color: #666;
+}
+
+/* テーブル本体に縦スクロールを設定 */
+.table-container {
+	width: 100%;
+	/* 高さを指定 */
+	max-height: 400px;
+	/* 縦スクロールを有効にする */
+	overflow-y: scroll;
+	margin-top: 20px;
+}
+
+/* テーブルのヘッダーが固定されるようにする */
+thead {
+	position: sticky;
+	top: 0;
+	color: white;
+	background-color: blue;
+	/* ヘッダーを他の行の上に表示 */
+	z-index: 1;
+	/* 上下の線が消えないように設定 */
+	box-shadow: 0 -1px 0 0 black, 0 1px 0 0 black;
+}
+
+/* ボタンのスタイル */
+.button-container {
+	text-align: center;
+	margin: 20px;
+}
+
+/* ボタン間のスペースを広げる */
+.button-container button {
+	padding: 5px 20px;
+	font-size: 16px;
+	cursor: pointer;
+	border: 1px solid black;
+	/* ボタン間のスペースを広げる */
+	margin: 0 40px;
+}
+
+/* 保存ボタンのスタイル */
+.button-container button[value="save"] {
+	background-color: orange;
+}
+
+/* 申請ボタンのスタイル */
+.button-container button[value="submit"] {
+	color: white;
+	background-color: darkblue;
+}
+
+/* textareaの基本スタイル */
+.textarea-remarks {
+	width: 100%;
+	height: 30px;
+	/* 枠線なし */
+	border: none;
+	/* 背景色透明 */
+	background-color: transparent;
+	/* ユーザーによるリサイズを無効化 */
+	resize: none;
+	/* パディングを含めて幅を設定 */
+	box-sizing: border-box;
+}
+
+.button-container button[disabled] {
+	/* グレー */
+	background-color: #dcdcdc;
+	/* テキストもグレー */
+	color: #999;
+	/* ポインタを無効にする */
+	cursor: not-allowed;
+}

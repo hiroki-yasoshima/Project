@@ -1,0 +1,122 @@
+.content-area {
+	width: 90%;
+	margin: auto;
+}
+
+.user-detail {
+	align-items: center;
+}
+
+.user-detail p {
+	text-align: left;
+}
+
+/* テーブルのスタイル調整 */
+.normal-table {
+	width: 70%;
+	border-collapse: collapse;
+	margin: 0 auto;
+	margin-bottom: 20px;
+}
+
+th,
+td {
+	padding: 4px 6px;
+	border: 1px solid black;
+}
+
+.normal-table td:nth-child(1),
+.normal-table td:nth-child(2),
+.normal-table td:nth-child(3), 
+.normal-table td:nth-child(4),
+.normal-table td:nth-child(5) {
+	text-align: right;
+}
+.normal-table td:nth-child(6) {
+	text-align: center;
+}
+
+.normal-thead {
+	color: white;
+	background-color: blue;
+}
+
+.approval-button {
+	color: white;
+	background-color: darkblue;
+	cursor: pointer;
+	
+}
+
+button {
+	color: white;
+	background-color: darkblue;
+	cursor: pointer;
+	/* 水平中央 */
+	text-align: center;
+	/* 垂直中央 */
+	vertical-align: middle;
+}
+
+.submit-btn{
+	margin-left: 40%;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+/* テーブル本体に縦スクロールを設定 */
+.table-container {
+	width: 100%;
+	max-height: 400px;
+	/* 縦スクロールを有効にする */
+	overflow-y: auto;
+	margin-top: 20px;
+}
+
+.attendance-table{
+	width: 100%;
+	text-align: center;
+	border-collapse: collapse;
+}
+
+/* テーブルのヘッダーが固定されるようにする */
+.attendance-thead {
+	position: sticky;
+	top: 0;
+	color: white;
+	background-color: blue;
+	/* ヘッダーを他の行の上に表示 */
+	z-index: 1;
+	/* 上下の線が消えないように設定 */
+	box-shadow: 0 -1px 0 0 black, 0 1px 0 0 black;
+}
+
+/* textareaの基本スタイル */
+.textarea-remarks {
+	width: 100%;
+	height: 30px;
+	/* 枠線なし */
+	border: none;
+	/* 背景色透明 */
+	background-color: transparent;
+	/* ユーザーによるリサイズを無効化 */
+	resize: none;
+	/* パディングを含めて幅を設定 */
+	box-sizing: border-box;
+}
+
+.reqquest-table {
+	width: 80%;
+	margin: 20px auto;
+	border-collapse: collapse;
+}
+
+.reqquest-table td:nth-child(1),
+.reqquest-table td:nth-child(2),
+.reqquest-table td:nth-child(3), 
+.reqquest-table td:nth-child(4) {
+	text-align: right;
+}
+.reqquest-table td:nth-child(5) {
+	text-align: left;
+}

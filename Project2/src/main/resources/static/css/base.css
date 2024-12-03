@@ -1,0 +1,33 @@
+/* header.css と menu.css をインポート */
+@import url('header.css');
+@import url('menu.css');
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.layout {
+    display: flex;
+}
+
+/* メインコンテンツ */
+.main-content {
+	width: 100%;
+    padding: 0 10px;
+}
+
+.header-container {
+    display: flex;
+    align-items: center; /* 縦方向に中央揃え */
+    justify-content: space-between;
+}
+
+/* エラーメッセージのスタイル */
+.error-message {
+    color: red;
+    margin-left: auto;
+    margin-right: auto;
+}

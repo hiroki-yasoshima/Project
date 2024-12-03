@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<!-- Thymeleafを使用することを宣言 -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>メッセージ登録画面</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<th:block th:each="css : ${cssPaths}">
+		<link rel="stylesheet" th:href="@{${css}}">
+	</th:block>
+</head>
+
+<body>
+	<div th:replace="header.html"></div>
+	<div class="layout">
+		<div th:replace="menu.html"></div>
+		<div class="main-content">
+			<div class="header-container">
+				<h2>メッセージ登録画面</h2>
+				<a th:href="@{/logout}">ログアウト</a>
+			</div>
+
+			<div class="content-area">
+				<h3>全体お知らせ</h3>
+				<form th:action="@{/message-register}" method="post">
+					<textarea th:field="*{messageForm.message}"></textarea>
+					<div class="display-inline">
+						<p>表示期間</p>
+						<input type="date" th:field="*{messageForm.startDay}" />
+						～
+						<input type="date" th:field="*{messageForm.endDay}" />
+					</div>
+
+					<button type="submit">送信</button>
+				</form>
+
+				<!-- エラーメッセージ -->
+				<p class="error-message" th:if="${matchAll}" th:text="${matchAll}"></p>
+				<p class="error-message" th:if="${nullErrorAll}" th:text="${nullErrorAll}"></p>
+
+				<!-- 全体メッセージ登録成功メッセージの表示 -->
+				<p class="error-message" th:if="${successMessageAll}" th:text="${successMessageAll}"></p>
+
+
+				<h3>個別メッセージ</h3>
+
+				<!-- メッセージ入力 -->
+				<textarea name="individualMessage" id="individualMessage"></textarea><br>
+
+				<!-- エラーメッセージ -->
+				<p class="error-message" th:if="${nullErrorMessage}" th:text="${nullErrorMessage}"></p>
+
+				<form th:action="@{/message-search}" method="post" th:object="${searchForm}">
+
+					<p>ユーザー名</p>
+					<input type="text" th:field="*{searchName}" id="searchName"><br>
+					<!-- エラーメッセージ -->
+					<p class="error-message" th:if="${nameLength}" th:text="${nameLength}"></p>
+
+					<p>社員番号</p>
+					<input type="text" th:field="*{searchId}" id="searchId"><br>
+					<!-- エラーメッセージ -->
+					<p class="error-message" th:if="${idNumber}" th:text="${idNumber}"></p>
+
+					<button type="submit">検索</button>
+
+					<!-- ユーザー情報を隠しフィールドとして送信 -->
+					<input type="hidden" name="selectedUserNames" id="selectedUserNames">
+					<input type="hidden" name="selectedUserIds" id="selectedUserIds">
+
+				</form>
+
+				<!-- エラーメッセージ -->
+				<p class="error-message" th:if="${userIdsError}" th:text="${userIdsError}"></p>
+
+				<!-- 個別メッセージ登録成功メッセージの表示 -->
+				<p class="error-message" th:if="${successMessage}" th:text="${successMessage}"></p>
+
+				<!-- 検索結果テーブル -->
+				<div th:if="${userList != null and userList.size() > 0}">
+					<table>
+						<thead>
+							<tr>
+								<th>社員番号</th>
+								<th>氏名</th>
+								<th>対象</th>
+							</tr>
+						</thead>
+						<tr th:each="id, iterStat : ${selectedIds}">
+							<td th:text="${id}"></td>
+							<td th:text="${selectedNames[iterStat.index]}"></td>
+							<td>
+								<!-- チェックボックスに名前のデータ属性を追加 -->
+								<input type="checkbox" th:value="${id}" class="user-checkbox"
+									th:attr="data-username=${selectedNames[iterStat.index]}" data-userid="${id}"
+									th:checked="${selectedIds.contains(id)}">
+							</td>
+						</tr>
+						<tr th:each="user : ${userList}"
+							th:if="${not(#lists.contains(selectedIds, T(java.lang.String).valueOf(user.id)))}">
+							<td th:text="${user.id}"></td>
+							<td th:text="${user.name}"></td>
+							<td>
+								<!-- チェックボックスに名前のデータ属性を追加 -->
+								<input type="checkbox" th:value="${user.id}" class="user-checkbox"
+									th:attr="data-username=${user.name}" data-userid="${user.id}">
+							</td>
+						</tr>
+					</table>
+
+					<p>送信対象者リスト</p>
+					<div id="selectedUsers">
+						<!-- チェックボックスにチェックを入れると選ばれたユーザー名がここに表示される -->
+						<p th:each="userName : ${selectedNames}" th:text="${userName}"></p>
+					</div>
+
+					<div class="display-inline">
+						<p>表示期間</p>
+						<input type="date" name="startDate" id="startDate" />
+						～
+						<input type="date" name="endDate" id="endDate" />
+					</div>
+					
+					<!-- 送信ボタン -->
+					<button type="button" id="sendIndividualMessage">送信</button>
+
+					<!-- エラーメッセージ -->
+					<p class="error-message" th:if="${match}" th:text="${match}"></p>
+					<p class="error-message" th:if="${nullError}" th:text="${nullError}"></p>
+
+					<!-- フォーム送信用の隠しフォーム（実際に送信するために使います） -->
+					<form id="hiddenForm" action="/individual-message-register" method="post" style="display:none;">
+						<input type="hidden" name="individualMessage" id="hiddenMessage">
+						<input type="hidden" name="userIdsToSend" id="hiddenUserIds">
+						<input type="hidden" name="startDate" id="hiddenStartDate">
+						<input type="hidden" name="endDate" id="hiddenEndDate">
+						<button type="submit" id="submitHiddenForm">送信</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script>
+		// htmlが完全に読み込まれた後にJavaScriptが実行される
+		$(document).ready(function () {
+			
+			// ページ遷移前にスクロール位置を保存
+            $(window).on('beforeunload', function () {
+                localStorage.setItem('scrollPosition', $(window).scrollTop());
+            });
+
+            // ページ読み込み時にスクロール位置を復元
+            var scrollPosition = localStorage.getItem('scrollPosition');
+            if (scrollPosition) {
+                $(window).scrollTop(scrollPosition);
+            }
+			
+			// チェックボックスが変更されたときに実行
+			$('.user-checkbox').change(function () {
+				var selectedUsers = [];
+				var selectedUserIds = [];
+
+				// チェックされたユーザー名をリストに追加
+				$('.user-checkbox:checked').each(function () {
+					var username = $(this).data('username');  // ユーザー名を取得
+					var userId = $(this).val();
+					selectedUsers.push(username);
+					selectedUserIds.push(userId);
+				});
+
+				// 送信対象者リストを更新
+				$('#selectedUsers').html('');
+				selectedUsers.forEach(function (user) {
+					$('#selectedUsers').append('<p>' + user + '</p>');
+				});
+
+				// 隠しフォームにデータを設定
+				$('#selectedUserNames').val(selectedUsers.join(','));
+				$('#selectedUserIds').val(selectedUserIds.join(','));
+
+			});
+
+			// 送信ボタンがクリックされたときの処理
+			$('#sendIndividualMessage').click(function () {
+				// チェックされたユーザーのIDを配列で取得
+				var selectedUserIds = [];
+				$('.user-checkbox:checked').each(function () {
+					selectedUserIds.push($(this).val());
+				});
+
+				// メッセージ、表示期間の値を取得
+				var individualMessage = $('#individualMessage').val();
+				var startDate = $('#startDate').val();
+				var endDate = $('#endDate').val();
+
+				// 隠しフォームにデータを設定
+				$('#hiddenMessage').val(individualMessage);
+				$('#hiddenUserIds').val(selectedUserIds.join(','));
+				$('#hiddenStartDate').val(startDate);
+				$('#hiddenEndDate').val(endDate);
+
+				// 隠しフォームを送信
+				$('#hiddenForm').submit();
+			});
+		});
+	</script>
+</body>
+
+</html>

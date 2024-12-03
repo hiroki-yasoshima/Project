@@ -1,0 +1,22 @@
+.sidebar {
+    width: 350px;
+    padding-top: 20px;
+    border-right: 1px solid black;
+}
+
+.sidebar nav ul li {
+    margin-top: 5px;
+    list-style: none;
+}
+
+.admin-menu {
+    margin-top: 20px; /* 上部にスペースを追加 */
+    margin-bottom: 20px; /* 下部にスペースを追加 */
+}
+
+a {
+    text-decoration: none;
+}
+a.selected {
+    font-size: 20px;
+}

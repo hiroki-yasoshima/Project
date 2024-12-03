@@ -1,0 +1,27 @@
+.content-area {
+	padding-left: 145px;
+	margin-bottom: 15px;
+}
+
+/* テーブルのスタイル調整 */
+table {
+	width: 70%;
+	border-collapse: collapse;
+	margin: 0 auto;
+	margin-bottom: 20px;
+}
+
+th,
+td {
+	padding: 4px 6px;
+	border: 1px solid black;
+}
+
+td {
+	text-align: right;
+}
+
+thead {
+	color: white;
+	background-color: blue;
+}

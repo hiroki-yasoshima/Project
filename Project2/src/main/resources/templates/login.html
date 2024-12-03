@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<!-- Thymeleafを使用することを宣言 -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>ログイン画面</title>
+	<link rel="stylesheet" th:href="@{${cssPaths}}">
+</head>
+
+<body>
+	<div th:replace="header.html"></div>
+
+	<div class="login-header">Login</div>
+	<form action="/login" method="post" th:object="${loginForm}">
+		<p>Email</p>
+		<input type="email" th:field="*{email}" minlength="3">
+		<p>パスワード</p>
+		<input type="password" th:field="*{password}" maxlength="8" minlength="8" pattern="(*[a-zA-Z])(*[0-9])"><br>
+		<button type="submit">Enter</button>
+	</form>
+
+	<!-- エラーメッセージの表示 -->
+	<p class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+	<p class="error-message" th:if="${timeoutMessage}" th:text="${timeoutMessage}"></p>
+	<p class="error-message" th:if="${accessMessage}" th:text="${accessMessage}"></p>
+</body>
+
+</html>

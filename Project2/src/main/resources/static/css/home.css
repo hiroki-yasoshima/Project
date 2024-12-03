@@ -1,0 +1,14 @@
+.employee-info span {
+    margin-right: 40px; /* 要素間にスペースを追加 */
+}
+
+.content-area{
+	padding-left: 120px;
+}
+
+/* 枠線のスタイル */
+.message-box {
+	padding: 10px;
+	width: 70%;
+	border: 1px solid black;
+}

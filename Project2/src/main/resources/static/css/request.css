@@ -1,0 +1,67 @@
+.content-area {
+	width: 80%;
+	margin: auto;
+}
+
+.inline {
+	display: flex;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.inline p,
+.inline input {
+	/* 要素同士の間隔を少し調整 */
+	margin: 0 5px;
+}
+
+.inline-reason {
+	display: flex;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.inline-reason p,
+.inline-reason input {
+	/* 要素同士の間隔を少し調整 */
+	margin: 0 5px;
+}
+
+.inline-reason input {
+	width: 60%;
+}
+
+/* テーブルのスタイル調整 */
+table {
+	width: 80%;
+	border-collapse: collapse;
+	margin: 0 auto
+}
+
+th,
+td {
+	padding: 4px 6px;
+	border: 1px solid black;
+}
+
+button {
+	color: white;
+	background-color: darkblue;
+	width: 70px;
+    margin-left: 300px;
+}
+
+thead {
+	color: white;
+	background-color: blue;
+}
+
+table td:nth-child(1),
+table td:nth-child(2),
+table td:nth-child(3) {
+	text-align: right;
+}
+
+table td:nth-child(5) {
+	text-align: center;
+}

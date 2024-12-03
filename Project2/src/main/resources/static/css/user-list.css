@@ -1,0 +1,67 @@
+.year-month {
+	margin-left: 5%;
+}
+
+/* テーブルのスタイル調整 */
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0 auto
+}
+
+th,
+td {
+	padding: 4px 6px;
+	border: 1px solid black;
+}
+
+thead {
+	color: white;
+	background-color: blue;
+}
+
+/* テーブル本体に縦スクロールを設定 */
+.table-container {
+	width: 100%;
+	/* 高さを指定 */
+	max-height: 400px;
+	/* 縦スクロールを有効にする */
+	overflow-y: scroll;
+	margin-top: 20px;
+}
+
+/* テーブルのヘッダーが固定されるようにする */
+thead {
+	position: sticky;
+	top: 0;
+	color: white;
+	background-color: blue;
+	/* ヘッダーを他の行の上に表示 */
+	z-index: 1;
+	/* 上下の線が消えないように設定 */
+	box-shadow: 0 -1px 0 0 black, 0 1px 0 0 black;
+}
+
+table td:nth-child(3),
+table td:nth-child(4),
+table td:nth-child(5), 
+table td:nth-child(6),
+table td:nth-child(7) {
+	text-align: right;
+}
+
+button {
+	color: white;
+	background-color: darkblue;
+	width: 90%;
+	cursor: pointer;
+	text-align: center;
+	/* 水平中央 */
+	vertical-align: middle;
+	/* 垂直中央 */
+}
+
+/* 実労働時間が出勤日数×8時間を超えている場合、背景色を赤にする */
+.overwork {
+	background-color: red;
+}

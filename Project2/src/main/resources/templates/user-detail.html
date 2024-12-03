@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!-- Thymeleafを使用することを宣言 -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>ユーザー詳細画面</title>
+	<th:block th:each="css : ${cssPaths}">
+		<link rel="stylesheet" th:href="@{${css}}">
+	</th:block>
+</head>
+
+<body>
+	<div th:replace="header.html"></div>
+	<div class="layout">
+		<div th:replace="menu.html"></div>
+		<div class="main-content">
+			<div class="header-container">
+				<h2>ユーザー詳細画面</h2>
+				<a th:href="@{/logout}">ログアウト</a>
+			</div>
+
+			<div class="content-area">
+				<!-- 「一覧」をリンクとして表示し、クリック時にフォームを送信する -->
+				<a href="javascript:void(0);" class="link-button" onclick="submitForm()">一覧</a>
+
+				<!-- 隠しフォーム -->
+				<form id="hidden-form" th:action="@{/list/update}" method="post" style="display:none;">
+					<input type="hidden" name="year" th:value="${currentYear}" />
+					<input type="hidden" name="month" th:value="${currentMonth}" />
+				</form>
+
+				<!-- ユーザー詳細情報 -->
+				<div class="user-detail">
+					<p>社員番号: <span th:text="${selectUser.id}"></span></p>
+					<p>氏名: <span th:text="${selectUser.name}"></span></p>
+					<p>メールアドレス: <span th:text="${selectUser.mail}"></span></p>
+				</div>
+
+				<!-- 年の選択肢をフォームとして送信して表を再描画 -->
+				<form th:action="@{/detail/year}" method="post" id="list-form">
+					<!-- 年の選択 -->
+					<select id="year" name="year" onchange="updateForm()">
+						<option th:each="y : ${years}" th:value="${y}" th:text="${y}" th:selected="${y == currentYear}">
+						</option>
+					</select>
+					<label for="year">年</label>
+
+					<!-- 現在の年とユーザーidを送信 -->
+					<input type="hidden" name="id" th:value="${selectUser.id}" />
+					<input type="hidden" name="currentYear" th:value="${currentYear}" />
+					<input type="hidden" name="month" th:value="${currentMonth}" />
+				</form>
+
+				<table class="normal-table">
+					<thead class="normal-thead">
+						<tr>
+							<th>月</th>
+							<th>出勤日数</th>
+							<th>勤務時間</th>
+							<th>遅刻早退</th>
+							<th>有給日数</th>
+							<th>詳細</th>
+						</tr>
+					</thead>
+					<tbody class="history">
+						<tr th:each="history : ${history}">
+							<td th:text="${#dates.format(history.yearmonth, 'M')}"></td>
+							<td th:text="${history.workingdays}"></td>
+							<td th:text="${history.workinghours}"></td>
+							<td th:text="${history.deductioncount}"></td>
+							<td th:text="${history.paidcount}"></td>
+							<!-- 詳細ボタン -->
+							<td>
+								<form th:action="@{/detail/month}" method="post">
+									<!-- ユーザーIDをhiddenで送信 -->
+									<input type="hidden" name="id" th:value="${selectUser.id}" />
+									<!-- 年月の値もhiddenで送信 -->
+									<input type="hidden" name="year" th:value="${currentYear}" />
+									<input type="hidden" name="month"
+										th:value="${#dates.format(history.yearmonth, 'M')}" />
+									<button type="submit">詳細</button>
+								</form>
+
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div th:if="${attendances != null and attendances.size() > 0}">
+					<p><span th:text="${currentMonth}">0</span> 月</p>
+					<form id="approval-form" th:action="@{/detail/approval}" method="post">
+						<!-- 勤怠データ -->
+						<div class="table-container">
+							<table class="attendance-table">
+								<thead class="attendance-thead">
+									<tr>
+										<th>日付</th>
+										<th>曜日</th>
+										<th>祝日</th>
+										<th>始業時間</th>
+										<th>終業時間</th>
+										<th>休憩時間</th>
+										<th>遅刻早退</th>
+										<th>備考</th>
+									</tr>
+								</thead>
+								<tbody class="attendance">
+									<tr th:each="attendance : ${attendances}">
+										<!-- 日付の隠しフィールドを追加 -->
+										<input type="hidden" name="date[]" th:value="${attendance.formattedDate}" />
+										<td th:text="${attendance.formattedDate}"></td>
+										<td th:text="${attendance.weekday}"></td>
+										<td th:text="${attendance.holiday}"></td>
+										<td>
+											<select name="startTimeHour">
+												<option th:each="hour : ${hours}" th:value="${hour}" th:text="${hour}"
+													th:selected="${hour == attendance.startTime.split(':')[0]}">
+												</option>
+											</select>
+											:
+											<select name="startTimeMinute">
+												<option th:each="minute : ${minutes}" th:value="${minute}"
+													th:text="${minute}"
+													th:selected="${minute == attendance.startTime.split(':')[1]}">
+												</option>
+											</select>
+										</td>
+										<td>
+											<select name="endTimeHour">
+												<option th:each="hour : ${hours}" th:value="${hour}" th:text="${hour}"
+													th:selected="${hour == attendance.endTime.split(':')[0]}">
+												</option>
+											</select>
+											:
+											<select name="endTimeMinute">
+												<option th:each="minute : ${minutes}" th:value="${minute}"
+													th:text="${minute}"
+													th:selected="${minute == attendance.endTime.split(':')[1]}">
+												</option>
+											</select>
+										</td>
+										<td>
+											<select name="restTime">
+												<option th:each="time : ${timeOptions}" th:value="${time}"
+													th:text="${time}" th:selected="${time == attendance.restTime}">
+												</option>
+											</select>
+										</td>
+										<td>
+											<select name="deductionTime">
+												<option th:each="time : ${timeOptions}" th:value="${time}"
+													th:text="${time}" th:selected="${time == attendance.deductionTime}">
+												</option>
+											</select>
+										</td>
+										<td>
+											<textarea class="textarea-remarks" name="remarks"
+												th:text="${attendance.remarks}"></textarea>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+
+							<!-- 年月とユーザーの情報を隠しフィールドで送信 -->
+							<input type="hidden" name="id" th:value="${selectUser.id}" />
+							<input type="hidden" name="currentYear" th:value="${currentYear}" />
+							<input type="hidden" name="currentMonth" th:value="${currentMonth}" />
+						</div>
+						<div th:if="${request != null and request.size() > 0}">
+							<table class="reqquest-table">
+								<thead class="normal-thead">
+									<tr>
+										<th>申請日時</th>
+										<th>開始日</th>
+										<th>終了日</th>
+										<th>取得日数</th>
+										<th>取得理由</th>
+									</tr>
+								</thead>
+								<tbody class="request">
+									<tr th:each="request : ${request}">
+										<td th:text="${#dates.format(request.createday, 'MM/dd HH:mm')}"></td>
+										<td th:text="${#dates.format(request.paidstartday, 'MM/dd')}"></td>
+										<td th:text="${#dates.format(request.paidendday, 'MM/dd')}"></td>
+										<td th:text="${request.paidcount}"></td>
+										<td th:text="${request.reason}"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="submit-btn">
+							<button type="submit" class="approval-button">承認</button>
+						</div>
+						<p style="color:red" th:if="${approvalSaved}" th:text="${approvalSaved}"></p>
+						<!-- エラーメッセージ表示 -->
+						<div th:if="${errorMessages != null}">
+							<ul>
+								<li th:each="message : ${errorMessages}" style="color:red" th:text="${message}"></li>
+							</ul>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 一覧を押下した際にフォームを送信する関数
+		function submitForm() {
+			document.getElementById('hidden-form').submit();
+		}
+		// 年を選択後にフォームを送信する関数
+		function updateForm() {
+			// フォームを送信
+			document.getElementById("list-form").submit();
+		}
+
+	</script>
+</body>
+
+</html>

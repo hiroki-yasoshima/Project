@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!-- Thymeleafを使用することを宣言 -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>ホーム画面</title>
+	<th:block th:each="css : ${cssPaths}">
+		<link rel="stylesheet" th:href="@{${css}}">
+	</th:block>
+</head>
+
+<body>
+	<div th:replace="header.html"></div>
+	<!-- レイアウトコンテナ -->
+	<div class="layout">
+		<div th:replace="menu.html"></div>
+		<div class="main-content">
+			<div class="header-container">
+				<h2>ホーム画面</h2>
+				<a th:href="@{/logout}">ログアウト</a>
+			</div>
+			<div class="content-area">
+				<div class="employee-info">
+					<span th:text="'社員番号：' + ${employeeId}"></span>
+					<span th:text="'氏名： ' + ${employeeName}"></span>
+				</div>
+
+				<h4>お知らせ</h4>
+				<div class="message-box">
+					<div th:each="allMessage : ${allmessages}">
+						<div>・<span th:text="${allMessage.message}"></span></div>
+					</div>
+				</div>
+
+				<h4>個別メッセージ</h4>
+				<div class="message-box">
+					<div th:each="message : ${messages}">
+						<div>・<span th:text="${message.message}"></span></div>
+					</div>
+				</div>
+
+				<h4>申請状況</h4>
+				<div class="message-box">
+					<div th:each="message : ${allRequestMessages}">
+						<div>・<span th:text="${message}"></span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<!-- Thymeleafを使用することを宣言 -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>ユーザー登録・削除画面</title>
+	<th:block th:each="css : ${cssPaths}">
+		<link rel="stylesheet" th:href="@{${css}}">
+	</th:block>
+</head>
+
+<body>
+	<div th:replace="header.html"></div>
+	<div class="layout">
+		<div th:replace="menu.html"></div>
+		<div class="main-content">
+			<div class="header-container">
+				<h2>ユーザー登録・削除画面</h2>
+				<a th:href="@{/logout}">ログアウト</a>
+			</div>
+			<div class="error-message">
+				<!-- 登録成功メッセージの表示 -->
+				<p th:if="${successMessage}" th:text="${successMessage}"></p>
+
+				<!-- 登録失敗メッセージの表示 -->
+				<p th:if="${errorMessage}" th:text="${errorMessage}"></p>
+
+
+				<!-- 削除エラーメッセージの表示 -->
+				<p th:if="${deleteErrorMessage}" th:text="${deleteErrorMessage}"></p>
+
+				<!-- 削除成功メッセージの表示 -->
+				<p th:if="${deleteMessage}" th:text="${deleteMessage}"></p>
+
+				<!-- 削除失敗メッセージの表示 -->
+				<p th:if="${undeleteMessage}" th:text="${undeleteMessage}"></p>
+			</div>
+			<!-- タブ表示 -->
+			<div class="tabs">
+				<div id="registerTab" data-tab="register" onclick="showTab('register')"
+					th:classappend="${currentTab == 'register' ? ' active' : ''}">登録</div>
+				<div id="searchTab" data-tab="search" onclick="showTab('search')"
+					th:classappend="${currentTab == 'search' ? ' active' : ''}">削除</div>
+			</div>
+			<div class="content-area">
+				<!-- 登録フォーム -->
+				<div id="registerForm" class="form-tab">
+					<form action="/user-management" method="post" th:object="${registerForm}">
+
+						<div class="inline">
+							<p>社員番号</p>
+							<input type="text" id="id" th:field="*{id}" required>
+						</div>
+						<p class="error-message-inline" th:if="${#fields.hasErrors('id')}" th:text="${idSize}"></p>
+
+						<div class="inline">
+							<p>氏名</p>
+							<input type="text" id="name" th:field="*{name}" required>
+						</div>
+						<p class="error-message-inline" th:if="${#fields.hasErrors('name')}" th:text="${nameSize}"></p>
+
+						<div class="inline">
+							<p>メールアドレス</p>
+							<input type="text" id="mail" th:field="*{mail}" minlength="3" maxlength="256" required>
+						</div>
+						<p class="error-message-inline" th:if="${#fields.hasErrors('mail')}" th:text="${errorMail}"></p>
+						<p class="error-message-inline" th:if="${emailMismatch}" th:text="${emailMismatch}"></p>
+
+						<div class="inline">
+							<p>メールアドレス（確認）</p>
+							<input type="text" id="reemail" th:field="*{reemail}" minlength="3" maxlength="256"
+								required>
+						</div>
+						<p class="error-message-inline" th:if="${#fields.hasErrors('reemail')}"
+							th:text="${errorReemail}"></p>
+
+						<div class="inline">
+							<p>パスワード</p>
+							<input type="password" id="password" th:field="*{password}" required>
+						</div>
+						<p class="error-message-inline" th:if="${#fields.hasErrors('password')}"
+							th:text="${passwordPattern}"></p>
+
+						<div class="inline-checkbox">
+							<p>管理者権限</p>
+							<input type="checkbox" id="admin" th:field="*{admin}" value="1" />
+						</div>
+
+						<button class="submit-button" type="submit">登録</button>
+						<p class="error-message" th:if="${errorMatching}" th:text="${errorMatching}"></p>
+
+					</form>
+				</div>
+
+				<!-- 検索フォーム -->
+				<div id="searchForm" class="form-tab">
+					<form action="/user-management/search" method="post" th:object="${searchForm}">
+
+						<div class="inline">
+							<p>社員番号</p>
+							<input type="text" name="searchId" th:field="*{searchId}" />
+						</div>
+						<p class="error-message-inline" th:if="${#fields.hasErrors('searchId')}" th:text="${idSize}">
+						</p>
+
+						<div class="inline">
+							<p>氏名</p>
+							<input type="text" name="searchName" th:field="*{searchName}" />
+						</div>
+						<p class="error-message-inline" th:if="${#fields.hasErrors('searchName')}"
+							th:text="${nameSize}"></p>
+
+						<div class="inline">
+							<p>メールアドレス</p>
+							<input type="text" name="searchMail" th:field="*{searchMail}" />
+						</div>
+						<p class="error-message-inline" th:if="${#fields.hasErrors('searchMail')}"
+							th:text="${errorMail}"></p>
+						<button class="submit-button" type="submit">検索</button>
+					</form>
+
+
+
+					<!-- 検索結果テーブル -->
+					<div th:if="${userList != null and userList.size() > 0}">
+						<table>
+							<thead>
+								<tr>
+									<th>社員番号</th>
+									<th>氏名</th>
+									<th>削除</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="user : ${userList}">
+									<td th:text="${user.id}"></td>
+									<td th:text="${user.name}"></td>
+									<td>
+										<input type="checkbox" name="userIdsToDelete" th:value="${user.id}" />
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<button class="submit-button" type="submit" id="deleteButton">削除</button>
+					</div>
+				</div>
+			</div>
+			<!-- エラーダイヤログ -->
+			<div id="errorModal" class="modal">
+				<div class="modal-content">
+					<p>１つしか選択出来ません。</p>
+					<button id="closeModal" onclick="closeModal()">OK</button>
+				</div>
+			</div>
+
+			<!-- 削除確認モーダル -->
+			<div id="deleteConfirmModal" class="modal">
+				<div class="modal-content">
+					<p>削除を確定してもよろしいですか？</p>
+					<p>※削除したら元には戻せません。</p>
+					<p>削除対象者: <span id="deleteUserName"></span></p>
+					<!-- 削除対象のユーザーIDを送信するフォーム -->
+					<form id="deleteForm" action="/user-management/delete" method="post">
+						<input type="hidden" name="userId" id="userIdToDelete" />
+						<button class="delete-btn" type="submit" id="confirmDeleteBtn">削除確定</button>
+						<button class="close-btn" type="button" onclick="closeDeleteModal()">キャンセル</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		// 初期表示のタブ
+		let currentTab = document.querySelector('[data-tab].active').getAttribute('data-tab');
+
+		// タブを切り替える関数
+		function showTab(tabName) {
+			// 現在表示されているタブのフォームとタブの両方を非表示
+			document.getElementById(currentTab + 'Form').classList.remove('active');
+			document.getElementById(currentTab + 'Tab').classList.remove('active');
+
+			// 新しく選択したタブのフォームとタブに「active」クラスを追加
+			document.getElementById(tabName + 'Form').classList.add('active');
+			document.getElementById(tabName + 'Tab').classList.add('active');
+
+			// 現在のタブを更新
+			currentTab = tabName;
+		}
+
+		// 初期タブを表示
+		showTab(currentTab);
+
+		// 最後に選択されたチェックボックスを保存する変数
+		let lastCheckedCheckbox = null;
+
+		// チェックボックスの状態変更時に実行する関数
+		function handleCheckboxChange() {
+			const checkedCheckboxes = document.querySelectorAll('input[name="userIdsToDelete"]:checked');
+
+			if (checkedCheckboxes.length > 1) {
+				// 2つ以上選択されている場合エラーダイアログを表示
+				showModal();
+				// 最後に選択されたチェックボックスを保持
+				lastCheckedCheckbox = checkedCheckboxes[checkedCheckboxes.length - 1];
+			} else {
+				// 1つ以下に戻った場合、エラーダイアログを閉じる
+				closeModal();
+			}
+		}
+
+		// チェックボックスに変更イベントを追加
+		const checkboxes = document.querySelectorAll('input[name="userIdsToDelete"]');
+		checkboxes.forEach(function (checkbox) {
+			checkbox.addEventListener('change', handleCheckboxChange);
+		});
+
+		// 削除ボタンのクリック処理
+		document.getElementById('deleteButton').onclick = function () {
+			const checkedCheckboxes = document.querySelectorAll('input[name="userIdsToDelete"]:checked');
+			if (checkedCheckboxes.length === 1) {
+				// 1人選択されていれば、ユーザー名を取得してモーダルを表示
+				const userName = checkedCheckboxes[0].parentElement.parentElement.querySelector('td:nth-child(2)').textContent;
+				const userId = checkedCheckboxes[0].value;  // ユーザーIDを取得
+				showDeleteModal(userName, userId);  // モーダルを表示
+			} else if (checkedCheckboxes.length === 0) {
+				// チェックボックスが1つも選ばれていない
+				alert('削除対象を1人選択してください。');
+			}
+		};
+		// 削除確認モーダルを表示する関数
+		function showDeleteModal(userName, userId) {
+			// ユーザー名をモーダルに表示
+			document.getElementById('deleteUserName').textContent = userName;
+			// ユーザーIDをフォームのhiddenフィールドにセット
+			document.getElementById('userIdToDelete').value = userId;
+			// モーダルを表示
+			document.getElementById('deleteConfirmModal').style.display = 'block';
+		}
+
+		// モーダルを閉じる関数
+		function closeDeleteModal() {
+			// モーダルを非表示
+			document.getElementById('deleteConfirmModal').style.display = 'none';
+		}
+
+		// モーダルを表示する関数
+		function showModal() {
+			document.getElementById('errorModal').style.display = 'block';
+		}
+
+		// モーダルを閉じる関数
+		function closeModal() {
+			document.getElementById('errorModal').style.display = 'none';
+			if (lastCheckedCheckbox) {
+				// 最後に選択されたチェックボックスを外す
+				lastCheckedCheckbox.checked = false;
+				// 変数をリセット
+				lastCheckedCheckbox = null;
+			}
+		}
+
+		// 削除確定ボタンの処理
+		document.getElementById('confirmDeleteBtn').onclick = function () {
+			// フォームを送信
+			document.getElementById('deleteForm').submit();
+			// モーダルを閉じる
+			closeDeleteModal();
+		};
+	</script>
+</body>
+
+</html>

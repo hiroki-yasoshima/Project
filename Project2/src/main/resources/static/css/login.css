@@ -1,0 +1,54 @@
+/* header.css と menu.css をインポート */
+@import url('header.css');
+
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin: 0;
+}
+
+/* エラーメッセージのスタイル */
+.error-message {
+    color: red;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.login-header {
+	color: white;
+	background-color: darkblue;
+	width: 25%;
+	text-align: center;
+	padding: 12px;
+	font-size: 2em;
+	margin-top: 80px;
+}
+
+form {
+	width: 25%;
+	margin-top: 20px;
+	margin-right: 20px;
+}
+
+/* 入力フィールド */
+input[type="email"],
+input[type="password"] {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid black;
+	font-size: 1em;
+}
+
+button {
+	color: white;
+	background-color: darkblue;
+	width: 60%;
+	text-align: center;
+	padding: 8px;
+	margin-top: 40px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}

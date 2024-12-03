@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!-- Thymeleafを使用することを宣言 -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>ユーザー一覧画面</title>
+	<th:block th:each="css : ${cssPaths}">
+		<link rel="stylesheet" th:href="@{${css}}">
+	</th:block>
+</head>
+
+<body>
+	<div th:replace="header.html"></div>
+	<div class="layout">
+		<div th:replace="menu.html"></div>
+		<div class="main-content">
+			<div class="header-container">
+				<h2>ユーザー一覧画面</h2>
+				<a th:href="@{/logout}">ログアウト</a>
+			</div>
+			<div class="year-month">
+				<!-- 年と月の選択肢をフォームとして送信して表を再描画 -->
+				<form th:action="@{/list/update}" method="post" id="list-form">
+					<!-- 年の選択 -->
+					<select id="year" name="year" onchange="submitForm()">
+						<option th:each="y : ${years}" th:value="${y}" th:text="${y}" th:selected="${y == currentYear}">
+						</option>
+					</select>
+					<label for="year">年</label>
+
+					<!-- 月の選択 -->
+					<select id="month" name="month" onchange="submitForm()">
+						<option th:each="m : ${months}" th:value="${m}" th:text="${m}"
+							th:selected="${m == currentMonth}">
+						</option>
+					</select>
+					<label for="month">月</label>
+
+					<!-- 現在の年と月を送信 -->
+					<input type="hidden" name="currentYear" th:value="${currentYear}" />
+					<input type="hidden" name="currentMonth" th:value="${currentMonth}" />
+				</form>
+			</div>
+
+			<div class="table-container">
+				<table>
+					<thead>
+						<tr>
+							<th>社員番号</th>
+							<th>氏名</th>
+							<th>出勤日数</th>
+							<th>勤務時間</th>
+							<th>実労働時間</th>
+							<th>遅刻早退</th>
+							<th>有給日数</th>
+							<th>承認</th>
+							<th>詳細</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- ユーザーリストを表示 -->
+						<tr th:each="user : ${users}" th:class="${userWorktimeSummaryMap[user.id] != null &&
+								userWorktimeSummaryMap[user.id].actualworkinghours >
+								(userWorktimeSummaryMap[user.id].workingdays * 8 + 40) ? 'overwork' : ''}">
+							<!-- 社員番号 -->
+							<td th:text="${user.id}"></td>
+							<!-- 氏名 -->
+							<td th:text="${user.name}"></td>
+
+							<!-- ユーザーごとの勤務履歴を表示 -->
+							<!-- 出勤日数 -->
+							<td th:text="${userWorktimeSummaryMap[user.id] != null &&
+								   userWorktimeSummaryMap[user.id].workingdays != null ? userWorktimeSummaryMap[user.id].workingdays : '0'}">
+							</td>
+							<!-- 勤務時間 -->
+							<td th:text="${userWorktimeSummaryMap[user.id] != null &&
+								   userWorktimeSummaryMap[user.id].workinghours != null ? userWorktimeSummaryMap[user.id].workinghours : '0'}">
+							</td>
+							<!-- 実労働時間 -->
+							<td
+								th:text="${userWorktimeSummaryMap[user.id] != null &&
+								   userWorktimeSummaryMap[user.id].actualworkinghours != null ? userWorktimeSummaryMap[user.id].actualworkinghours : '0'}">
+							</td>
+							<!-- 遅刻早退 -->
+							<td
+								th:text="${userWorktimeSummaryMap[user.id] != null &&
+								   userWorktimeSummaryMap[user.id].deductioncount != null ? userWorktimeSummaryMap[user.id].deductioncount : '0'}">
+							</td>
+							<!-- 有給日数 -->
+							<td th:text="${userWorktimeSummaryMap[user.id] != null &&
+								   userWorktimeSummaryMap[user.id].paidcount != null ? userWorktimeSummaryMap[user.id].paidcount : '0'}">
+							</td>
+							<!-- 承認 -->
+							<td
+								th:text="${userWorktimeSummaryMap[user.id] != null &&
+								   userWorktimeSummaryMap[user.id].recognitionflag != null ? (userWorktimeSummaryMap[user.id].recognitionflag ? '承認' : '') : ''}">
+							</td>
+							<!-- 詳細ボタン -->
+							<td>
+								<form th:action="@{/detail/year}" method="post">
+									<!-- ユーザーIDをhiddenで送信 -->
+									<input type="hidden" name="id" th:value="${user.id}" />
+									<!-- 年月の値もhiddenで送信 -->
+									<input type="hidden" name="year" th:value="${currentYear}" />
+									<input type="hidden" name="month" th:value="${currentMonth}" />
+									<button type="submit">詳細</button>
+								</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 年月を選択後にフォームを送信する関数
+		function submitForm() {
+			// フォームを送信
+			document.getElementById("list-form").submit();
+		}
+	</script>
+</body>
+
+</html>

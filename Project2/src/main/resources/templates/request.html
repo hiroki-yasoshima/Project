@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!-- Thymeleafを使用することを宣言 -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>申請画面</title>
+	<th:block th:each="css : ${cssPaths}">
+		<link rel="stylesheet" th:href="@{${css}}">
+	</th:block>
+</head>
+
+<body>
+	<div th:replace="header.html"></div>
+	<div class="layout">
+		<div th:replace="menu.html"></div>
+		<div class="main-content">
+			<div class="header-container">
+				<h2>申請画面</h2>
+				<a th:href="@{/logout}">ログアウト</a>
+			</div>
+			<div class="content-area">
+				<!-- 年と月の選択肢をフォームとして送信して表を再描画 -->
+				<form th:action="@{/request/update}" method="post" id="request-form">
+					<!-- 年の選択 -->
+					<select id="year" name="year" onchange="submitForm()">
+						<option th:each="y : ${years}" th:value="${y}" th:text="${y}" th:selected="${y == currentYear}">
+						</option>
+					</select>
+					<label for="year">年</label>
+
+					<!-- 月の選択 -->
+					<select id="month" name="month" onchange="submitForm()">
+						<option th:each="m : ${months}" th:value="${m}" th:text="${m}"
+							th:selected="${m == currentMonth}">
+						</option>
+					</select>
+					<label for="month">月</label>
+
+					<!-- 現在の年と月を送信 -->
+					<input type="hidden" name="currentYear" th:value="${currentYear}" />
+					<input type="hidden" name="currentMonth" th:value="${currentMonth}" />
+				</form>
+
+				<h2>有給休暇申請</h2>
+				<form th:action="@{/request/save}" method="post" id="request-data-form" th:object="${requestForm}">
+					<input type="hidden" name="year" id="hidden-year" />
+					<input type="hidden" name="month" id="hidden-month" />
+					<div th:if="${disable != 1}">
+
+						<div class="inline">
+							<p>有給休暇取得日</p>
+							<input type="date" th:field="*{startDate}" />
+							～
+							<input type="date" th:field="*{endDate}" />
+							<p>（１日だけの場合は同日を入力）</p>
+						</div>
+						<!-- 開始日・終了日のエラーメッセージ -->
+						<p class="error-message" th:if="${startNullError}" th:text="${startNullError}"></p>
+						<p class="error-message" th:if="${endNullError}" th:text="${endNullError}"></p>
+						<p class="error-message" th:if="${Match}" th:text="${Match}"></p>
+
+						<div class="inline">
+							<p>取得日数</p>
+							<input type="number" th:field="*{paidCount}" min="0" value="0" step="0.5">
+							<p>日（0.5日単位）</p>
+						</div>
+						<!-- 取得日数のエラーメッセージ -->
+						<p class="error-message" th:if="${countNullError}" th:text="${countNullError}"></p>
+						<p class="error-message" th:if="${conutError}" th:text="${conutError}"></p>
+						<p class="error-message" th:if="${paidCountError}" th:text="${paidCountError}"></p>
+
+						<div class="inline-reason">
+							<p>理由</p>
+							<input type="text" th:field="*{reason}" /><br>
+						</div>
+						<!-- 理由のエラーメッセージ -->
+						<p class="error-message" th:if="${reasonNullError}" th:text="${reasonNullError}"></p>
+						<p class="error-message" th:if="${lengthError}" th:text="${lengthError}"></p>
+
+						<button type="submit" onclick="submitRequestForm()">申請</button>
+						<p class="error-message" th:if="${requestSaved}" th:text="${requestSaved}"></p>
+					</div>
+				</form>
+				<p>申請数 <span th:text="${requestCount}">0</span> 件</p>
+				<div th:if="${request != null and request.size() > 0}">
+					<table>
+						<thead>
+							<tr>
+								<th>開始日</th>
+								<th>終了日</th>
+								<th>取得日数</th>
+								<th>取得理由</th>
+								<th>承認</th>
+							</tr>
+						</thead>
+						<tbody class="request">
+							<tr th:each="request : ${request}">
+								<td th:text="${#dates.format(request.paidstartday, 'MM/dd')}"></td>
+								<td th:text="${#dates.format(request.paidendday, 'MM/dd')}"></td>
+								<td th:text="${request.paidcount}"></td>
+								<td th:text="${request.reason}"></td>
+								<td th:text="${request.recognitionflag ? '承認' : '未承認'}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 年月選択後にフォームを送信する関数
+		function submitForm() {
+			// フォームを送信
+			document.getElementById("request-form").submit();
+		}
+
+		// 申請または保存ボタンが押されたときに、年と月を送信フォームに設定する
+		function submitRequestForm() {
+			// 年月選択値を隠しフィールドに設定
+			document.getElementById("hidden-year").value = document.getElementById("year").value;
+			document.getElementById("hidden-month").value = document.getElementById("month").value;
+
+			// 送信するフォームに追加情報をセット
+			document.getElementById("request-data-form").submit()
+		}
+	</script>
+</body>
+
+</html>

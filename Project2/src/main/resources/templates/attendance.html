@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!-- Thymeleafを使用することを宣言 -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>勤怠登録画面</title>
+	<th:block th:each="css : ${cssPaths}">
+		<link rel="stylesheet" th:href="@{${css}}">
+	</th:block>
+</head>
+
+<body>
+	<div th:replace="header.html"></div>
+	<div class="layout">
+		<div th:replace="menu.html"></div>
+		<div class="main-content">
+			<div class="header-container">
+				<h2>勤怠登録画面</h2>
+				<a th:href="@{/logout}">ログアウト</a>
+			</div>
+
+			<!-- 年と月の選択肢をフォームとして送信して表を再描画 -->
+			<form th:action="@{/attendance/update}" method="post" id="attendance-form">
+				<!-- 年の選択 -->
+				<select id="year" name="year" onchange="submitForm()">
+					<option th:each="y : ${years}" th:value="${y}" th:text="${y}" th:selected="${y == currentYear}">
+					</option>
+				</select>
+				<label for="year">年</label>
+
+				<!-- 月の選択 -->
+				<select id="month" name="month" onchange="submitForm()">
+					<option th:each="m : ${months}" th:value="${m}" th:text="${m}" th:selected="${m == currentMonth}">
+					</option>
+				</select>
+				<label for="month">月</label>
+
+				<!-- 現在の年と月を送信 -->
+				<input type="hidden" name="currentYear" th:value="${currentYear}" />
+				<input type="hidden" name="currentMonth" th:value="${currentMonth}" />
+			</form>
+
+			<!-- 勤怠データの入力フォーム -->
+			<form th:action="@{/attendance/save}" method="post" id="attendance-data-form">
+				<!-- 年月の隠しフィールド -->
+				<input type="hidden" name="year" id="hidden-year" />
+				<input type="hidden" name="month" id="hidden-month" />
+				<div class="table-container">
+					<table>
+						<thead>
+							<tr>
+								<th>日付</th>
+								<th>曜日</th>
+								<th>祝日</th>
+								<th>始業時間</th>
+								<th>終業時間</th>
+								<th>休憩時間</th>
+								<th>遅刻早退</th>
+								<th>備考</th>
+							</tr>
+						</thead>
+						<tbody class="attendance">
+							<tr th:each="attendance : ${attendances}">
+								<!-- 日付の隠しフィールドを追加 -->
+								<input type="hidden" name="date[]" th:value="${attendance.formattedDate}" />
+								<td th:text="${attendance.formattedDate}"></td>
+								<td th:text="${attendance.weekday}"></td>
+								<td th:text="${attendance.holiday}"></td>
+								<td>
+									<select name="startTimeHour" th:disabled="${disable} != null">
+										<option th:each="hour : ${hours}" th:value="${hour}" th:text="${hour}"
+											th:selected="${hour == attendance.startTime.split(':')[0]}"></option>
+									</select>
+									:
+									<select name="startTimeMinute" th:disabled="${disable} != null">
+										<option th:each="minute : ${minutes}" th:value="${minute}" th:text="${minute}"
+											th:selected="${minute == attendance.startTime.split(':')[1]}"></option>
+									</select>
+								</td>
+								<td>
+									<select name="endTimeHour" th:disabled="${disable} != null">
+										<option th:each="hour : ${hours}" th:value="${hour}" th:text="${hour}"
+											th:selected="${hour == attendance.endTime.split(':')[0]}">
+										</option>
+									</select>
+									:
+									<select name="endTimeMinute" th:disabled="${disable} != null">
+										<option th:each="minute : ${minutes}" th:value="${minute}" th:text="${minute}"
+											th:selected="${minute == attendance.endTime.split(':')[1]}"></option>
+									</select>
+								</td>
+								<td>
+									<select name="restTime" th:disabled="${disable} != null">
+										<option th:each="time : ${timeOptions}" th:value="${time}" th:text="${time}"
+											th:selected="${time == attendance.restTime}"></option>
+									</select>
+								</td>
+								<td>
+									<select name="deductionTime" th:disabled="${disable} != null">
+										<option th:each="time : ${timeOptions}" th:value="${time}" th:text="${time}"
+											th:selected="${time == attendance.deductionTime}"></option>
+									</select>
+								</td>
+								<td>
+									<textarea class="textarea-remarks" name="remarks" th:text="${attendance.remarks}"
+										th:disabled="${disable} != null"></textarea>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- ボタンエリア -->
+				<div class="button-container" th:if="${disable != 1}">
+					<button name="action" type="submit" th:value="save" th:disabled="${disable == 2}"
+						onclick="submitAttendanceForm()">保存</button>
+					<button name="action" type="submit" th:value="submit" th:disabled="${disable == 2}"
+						onclick="submitAttendanceForm()">申請</button>
+				</div>
+			</form>
+			<!-- エラーメッセージ表示 -->
+			<div th:if="${errorMessages != null}" class="error-message">
+				<ul>
+					<li th:each="message : ${errorMessages}" th:text="${message}"></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 年月選択後にフォームを送信する関数
+		function submitForm() {
+			// フォームを送信
+			document.getElementById("attendance-form").submit();
+		}
+
+		// 申請または保存ボタンが押されたときに、年と月を送信フォームに設定する
+		function submitAttendanceForm() {
+			// 年月選択値を隠しフィールドに設定
+			document.getElementById("hidden-year").value = document.getElementById("year").value;
+			document.getElementById("hidden-month").value = document.getElementById("month").value;
+
+			// 送信するフォームに追加情報をセット
+			document.getElementById("attendance-data-form").submit()
+		}
+	</script>
+</body>
+
+</html>

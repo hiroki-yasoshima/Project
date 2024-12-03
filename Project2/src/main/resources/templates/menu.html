@@ -1,0 +1,17 @@
+<div class="sidebar">
+    <nav>
+        <ul>
+            <li><a th:href="@{/home}" th:class="${currentPage == 'home' ? 'selected' : ''}">ホーム画面</a></li>
+            <li><a th:href="@{/attendance}" th:class="${currentPage == 'attendance' ? 'selected' : ''}">勤怠登録画面</a></li>
+            <li><a th:href="@{/request}" th:class="${currentPage == 'request' ? 'selected' : ''}">申請画面</a></li>
+            <li><a th:href="@{/attendance-history}" th:class="${currentPage == 'attendance-history' ? 'selected' : ''}">勤怠履歴画面</a></li>
+            
+            <div th:if="${employeeAdmin == 2}" class="admin-menu">
+                <!-- 管理者の時だけ表示 -->
+                <li><a th:href="@{/user-management}" th:class="${currentPage == 'user-management' ? 'selected' : ''}">ユーザー登録・削除画面</a></li>
+                <li><a th:href="@{/user-list}" th:class="${currentPage == 'user-list' ? 'selected' : ''}">ユーザー一覧画面</a></li>
+                <li><a th:href="@{/message}" th:class="${currentPage == 'message' ? 'selected' : ''}">メッセージ登録画面</a></li>
+            </div>
+        </ul>
+    </nav>
+</div>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!-- Thymeleafを使用することを宣言 -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>勤怠履歴画面</title>
+	<th:block th:each="css : ${cssPaths}">
+		<link rel="stylesheet" th:href="@{${css}}">
+	</th:block>
+</head>
+
+<body>
+	<div th:replace="header.html"></div>
+	<div class="layout">
+		<div th:replace="menu.html"></div>
+		<div class="main-content">
+			<div class="header-container">
+				<h2>勤怠履歴画面</h2>
+				<a th:href="@{/logout}">ログアウト</a>
+			</div>
+			<div class="content-area">
+				<!-- 年と月の選択肢をフォームとして送信して表を再描画 -->
+				<form th:action="@{/attendance-history/update}" method="post" id="request-form">
+					<!-- 年の選択 -->
+					<select id="year" name="year" onchange="submitForm()">
+						<option th:each="y : ${years}" th:value="${y}" th:text="${y}" th:selected="${y == currentYear}">
+						</option>
+					</select>
+					<label for="year">年</label>
+
+					<!-- 現在の年を送信 -->
+					<input type="hidden" name="currentYear" th:value="${currentYear}" />
+				</form>
+			</div>
+
+			<table>
+				<thead>
+					<tr>
+						<th>月</th>
+						<th>出勤日数</th>
+						<th>勤務時間</th>
+						<th>遅刻早退</th>
+						<th>有給日数</th>
+					</tr>
+				</thead>
+				<tbody class="history">
+					<tr th:each="history : ${history}">
+						<td th:text="${#dates.format(history.yearmonth, 'M')}"></td>
+						<td th:text="${history.workingdays}"></td>
+						<td th:text="${history.workinghours}"></td>
+						<td th:text="${history.deductioncount}"></td>
+						<td th:text="${history.paidcount}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+
+	<script>
+		// 年月選択後にフォームを送信する関数
+		function submitForm() {
+			// フォームを送信
+			document.getElementById("request-form").submit();
+		}
+	</script>
+</body>
+
+</html>
